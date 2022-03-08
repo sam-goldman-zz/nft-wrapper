@@ -1,0 +1,15 @@
+.exit
+nft
+NFT
+await nft.ownerOf(3)
+await nft.ownerOf(2)
+await nft.ownerOf(1)
+await nft.ownerOf(0)
+await nft.mint('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
+nft.mint('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
+nft
+  console.log('NFT contract deployed to:', address);
+  const address = nft.address;
+  await nft.deployed();
+  const nft = await NFT.deploy();
+  const NFT = await ethers.getContractFactory('ExampleNFT');
