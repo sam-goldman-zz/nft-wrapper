@@ -402,6 +402,77 @@
       "artifacts": [
         "IERC165"
       ]
+    },
+    "/Users/samgoldman/projects/nft-wrapper/hardhat/contracts/DestWrapperManager.sol": {
+      "lastModificationDate": 1646785259173,
+      "contentHash": "ddd5b70909ef380c050b2509b01868e6",
+      "sourceName": "contracts/DestWrapperManager.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.4"
+      ],
+      "artifacts": [
+        "DestWrapperManager"
+      ]
+    },
+    "/Users/samgoldman/projects/nft-wrapper/hardhat/contracts/SourceWrapperManager.sol": {
+      "lastModificationDate": 1646785672342,
+      "contentHash": "bc413a4802e5882504c07f088c8003ab",
+      "sourceName": "contracts/SourceWrapperManager.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.4"
+      ],
+      "artifacts": [
+        "IERC721",
+        "SourceWrapperManager"
+      ]
     }
   }
 }

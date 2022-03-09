@@ -1,4 +1,58 @@
 .exit
+await nft.mint('0x70997970C51812dc3A010C7d01b50e0d17dc79C8', {from: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8');
+await sourceWrapperManager.send('0x70997970C51812dc3A010C7d01b50e0d17dc79C8', 123, nft.address, 1, {from:'0x70997970C51812dc3A010C7d01b50e0d17dc79C8');
+await sourceWrapperManager.send('0x70997970C51812dc3A010C7d01b50e0d17dc79C8', 123, nft.address, 1);
+await nft.ownerOf(1)
+hre
+await nft.ownerOf(1);
+await nft.mint('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
+const sourceWrapperManager = await SourceWrapperManager.deploy();
+const SourceWrapperManager = await ethers.getContractFactory('SourceWrapperManager');
+nft.address
+  console.log('NFT contract deployed to:', address);
+  const address = nft.address;
+  await nft.deployed();
+  const nft = await NFT.deploy();
+  const NFT = await ethers.getContractFactory('ExampleNFT');
+.exit
+asdf
+.exit
+  console.log('NFT contract deployed to:', address);
+  const address = nft.address;
+  await nft.deployed();
+  const nft = await NFT.deploy();
+  const NFT = await ethers.getContractFactory('ExampleNFT');
+.exit
+  console.log('NFT contract deployed to:', address);
+  const address = nft.address;
+  await nft.deployed();
+  const nft = await NFT.deploy();
+  const NFT = await ethers.getContractFactory('ExampleNFT');
+  console.log('NFT contract deployed to:', address);
+  const address = nft.address;
+  await nft.deployed();
+  const nft = await NFT.deploy();
+  const NFT = await ethers.getContractFactory('ExampleNFT');
+.exit
+await nft.ownerOf(1)
+nft.ownerOf(1)
+await nft.transferFrom('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266', '0x70997970c51812dc3a010c7d01b50e0d17dc79c8', 1)
+await nft.ownerOf(1);
+nft.ownerOf(1);
+await nft.mint('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266');
+nft
+  console.log('NFT contract deployed to:', address);
+  const address = nft.address;
+  await nft.deployed();
+  const nft = await NFT.deploy();
+  const NFT = await ethers.getContractFactory('ExampleNFT');
+.exit
+  console.log('NFT contract deployed to:', address);
+  const address = nft.address;
+  await nft.deployed();
+  const nft = await NFT.deploy();
+  const NFT = await ethers.getContractFactory('ExampleNFT');
+.exit
 nft
 NFT
 await nft.ownerOf(3)
