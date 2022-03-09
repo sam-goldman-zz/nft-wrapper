@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
+import "hardhat/console.sol";
 
 interface IERC721 {
   function ownerOf(uint256 _tokenId) external view returns (address);
@@ -17,15 +18,12 @@ contract SourceWrapperManager {
   // RollupRecord(serial_number=R, dest_rollup=B, initial_owner=01)
 
   // TODO:
-  // -check that msg.sender is owner of nft
-  // -generate serial number based on (nft tokenId, nft contractaddress, initialOwner)
-  // -transfer ownership of tokenId from msg.sender to wrappermanager contract
   // -store info in mappings / rolluprecord
   function send(
-    address initialOwner,
-    uint256 destRollup,
     address tokenAddress,
-    uint256 tokenId
+    uint256 tokenId,
+    address initialOwner,
+    uint256 destRollup
   ) public {
     require(
       msg.sender == IERC721(tokenAddress).ownerOf(tokenId),
@@ -33,6 +31,8 @@ contract SourceWrapperManager {
     );
 
     bytes32 serialNumber = keccak256(abi.encodePacked(tokenAddress, initialOwner, tokenId));
+
+    console.logBytes32(serialNumber);
 
     IERC721(tokenAddress).transferFrom(initialOwner, address(this), tokenId);
   }

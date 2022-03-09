@@ -15,10 +15,11 @@ const revertMessages = {
 //   return ethereum.send('evm_revert', [snapshotId])
 // }
 
-describe('SourceWrapperManager', () => {
-  let sourceWrapperManager, nft;
+describe('Test', () => {
+  let sourceWrapperManager, destWrapperManager, nft;
 
   let destRollup = 123;
+  let sourceRollup = 321;
   let tokenId = 1;
 
   before(async () => {
@@ -29,12 +30,15 @@ describe('SourceWrapperManager', () => {
     const NFT = await ethers.getContractFactory('ExampleNFT');
     nft = await NFT.deploy();
     await nft.deployed();
+    await nft.mint(owner.address);
 
     const SourceWrapperManager = await ethers.getContractFactory('SourceWrapperManager');
     sourceWrapperManager = await SourceWrapperManager.deploy();
     await sourceWrapperManager.deployed();
-
-    await nft.mint(owner.address);
+  
+    const DestWrapperManager = await ethers.getContractFactory('DestWrapperManager');
+    destWrapperManager = await DestWrapperManager.deploy();
+    await destWrapperManager.deployed();
   });
 
   // beforeEach(async () => {
@@ -45,15 +49,15 @@ describe('SourceWrapperManager', () => {
   //   await restore(snapshotId);
   // })
 
-  describe('send', () => {
+  describe('Source - send', () => {
     it('happy case', async () => {
       await nft.approve(sourceWrapperManager.address, tokenId);
 
       await sourceWrapperManager.send(
-        owner.address,
-        destRollup,
         nft.address,
-        tokenId
+        tokenId,
+        owner.address,
+        destRollup
       );
 
       // transfers tokenId to sourceWrapperManager
@@ -67,12 +71,30 @@ describe('SourceWrapperManager', () => {
         sourceWrapperManager
           .connect(nonOwner.address)
           .send(
-            owner.address,
-            123,
             nft.address,
-            1
+            tokenId,
+            owner.address,
+            destRollup
           )
       ).to.be.revertedWith(revertMessages.SourceSendCalledByNonOwner)
+    })
+  })
+
+  describe('Dest - makeWrapper', () => {
+    it('happy case', async () => {
+      await destWrapperManager.makeWrapper(
+        nft.address,
+        tokenId,
+        sourceRollup
+      );
+
+      const serialNumber = await expect(token.transfer(walletTo.address, 7))
+      .to.emit(token, 'Transfer')
+      .withArgs(wallet.address, walletTo.address, 7);
+
+      expect(
+        await destWrapperManager.ownerOf(serialNumber)
+      )
     })
   })
 });

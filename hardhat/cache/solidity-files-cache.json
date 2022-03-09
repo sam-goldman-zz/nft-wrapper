@@ -404,8 +404,8 @@
       ]
     },
     "/Users/samgoldman/projects/nft-wrapper/hardhat/contracts/DestWrapperManager.sol": {
-      "lastModificationDate": 1646785259173,
-      "contentHash": "ddd5b70909ef380c050b2509b01868e6",
+      "lastModificationDate": 1646793779244,
+      "contentHash": "42a6a2ae4f690aec2057544c9e9302df",
       "sourceName": "contracts/DestWrapperManager.sol",
       "solcConfig": {
         "version": "0.8.4",
@@ -430,7 +430,9 @@
           }
         }
       },
-      "imports": [],
+      "imports": [
+        "hardhat/console.sol"
+      ],
       "versionPragmas": [
         "^0.8.4"
       ],
@@ -439,9 +441,47 @@
       ]
     },
     "/Users/samgoldman/projects/nft-wrapper/hardhat/contracts/SourceWrapperManager.sol": {
-      "lastModificationDate": 1646788140223,
-      "contentHash": "51f4102c20e07e7765b18f1818126a50",
+      "lastModificationDate": 1646793833410,
+      "contentHash": "d617f1da36e612f2d175b728548fc477",
       "sourceName": "contracts/SourceWrapperManager.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "hardhat/console.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.4"
+      ],
+      "artifacts": [
+        "IERC721",
+        "SourceWrapperManager"
+      ]
+    },
+    "/Users/samgoldman/projects/nft-wrapper/hardhat/node_modules/hardhat/console.sol": {
+      "lastModificationDate": 1646700198817,
+      "contentHash": "cc4777addd464ea56fa35b1c45df0591",
+      "sourceName": "hardhat/console.sol",
       "solcConfig": {
         "version": "0.8.4",
         "settings": {
@@ -467,11 +507,10 @@
       },
       "imports": [],
       "versionPragmas": [
-        "^0.8.4"
+        ">=0.4.22 <0.9.0"
       ],
       "artifacts": [
-        "IERC721",
-        "SourceWrapperManager"
+        "console"
       ]
     }
   }
