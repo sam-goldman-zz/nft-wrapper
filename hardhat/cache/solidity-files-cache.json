@@ -439,8 +439,8 @@
       ]
     },
     "/Users/samgoldman/projects/nft-wrapper/hardhat/contracts/SourceWrapperManager.sol": {
-      "lastModificationDate": 1646785672342,
-      "contentHash": "bc413a4802e5882504c07f088c8003ab",
+      "lastModificationDate": 1646788140223,
+      "contentHash": "51f4102c20e07e7765b18f1818126a50",
       "sourceName": "contracts/SourceWrapperManager.sol",
       "solcConfig": {
         "version": "0.8.4",

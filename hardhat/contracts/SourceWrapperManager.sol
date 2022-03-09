@@ -3,6 +3,10 @@ pragma solidity ^0.8.4;
 
 interface IERC721 {
   function ownerOf(uint256 _tokenId) external view returns (address);
+
+  function transferFrom(address _from, address _to, uint256 _tokenId) external payable;
+
+  function approve(address _approved, uint256 _tokenId) external payable;
 }
 
 contract SourceWrapperManager {
@@ -20,16 +24,16 @@ contract SourceWrapperManager {
   function send(
     address initialOwner,
     uint256 destRollup,
-    address tokenContract,
+    address tokenAddress,
     uint256 tokenId
   ) public {
     require(
-      msg.sender == IERC721(tokenContract).ownerOf(tokenId),
+      msg.sender == IERC721(tokenAddress).ownerOf(tokenId),
       "SourceWrapperManager: send function must be called by owner of nft"
     );
 
-    bytes32 serialNumber = keccak256(abi.encodePacked(tokenContract, initialOwner, tokenId));
+    bytes32 serialNumber = keccak256(abi.encodePacked(tokenAddress, initialOwner, tokenId));
 
-    // IERC721(tokenContract).transferFrom
+    IERC721(tokenAddress).transferFrom(initialOwner, address(this), tokenId);
   }
 }
