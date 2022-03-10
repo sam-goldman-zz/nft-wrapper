@@ -1,3 +1,28 @@
+await source.x()
+source = Source.attach('0x6826E2b3800f6cbfC63e515594D79905AFf9fD51')
+source = ethers.attach('0x6826E2b3800f6cbfC63e515594D79905AFf9fD51')
+const Source = await ethers.getContractFactory('Source')
+await source.x()
+await source.x
+source.interface
+await source.x();
+source = Source.attach('0x6826E2b3800f6cbfC63e515594D79905AFf9fD51')
+Source = await ethers.getContractFactory('Source')
+tx
+const tx = await dest.doTheThing(sourceAddress, 4789);
+sourceAddress = '0x6826E2b3800f6cbfC63e515594D79905AFf9fD51'
+dest = Dest.attach('0x4a3844F8B63ffb024aE7b5d3BD613f8AD7bcB43b');
+const Dest = await ethers.getContractFactory('Dest');
+[owner] = await ethers.getSigners();
+.exit
+await ethers.getSigners()
+.exit
+await ethers.getSigners()
+.exit
+.exiut
+await ethers.getSigners()
+.exit
+await ethers.getSigner();
 .exit
 await nft.mint('0x70997970C51812dc3A010C7d01b50e0d17dc79C8', {from: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8');
 await sourceWrapperManager.send('0x70997970C51812dc3A010C7d01b50e0d17dc79C8', 123, nft.address, 1, {from:'0x70997970C51812dc3A010C7d01b50e0d17dc79C8');
