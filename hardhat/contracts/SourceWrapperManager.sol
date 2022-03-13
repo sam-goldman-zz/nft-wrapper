@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
-import "hardhat/console.sol";
+
+import { ICrossDomainMessenger } from 
+    "@eth-optimism/contracts/libraries/bridge/ICrossDomainMessenger.sol";
 
 interface IERC721 {
   function ownerOf(uint256 _tokenId) external view returns (address);
@@ -11,29 +13,48 @@ interface IERC721 {
 }
 
 contract SourceWrapperManager {
-  mapping(bytes32 => address) serials; // serial => nft address or vice versa
-  mapping(bytes32 => uint256) destRollups; // serial => destRollup
-  mapping(bytes32 => address) initialOwners; // serial => initialOwner
-  // OR
-  // RollupRecord(serial_number=R, dest_rollup=B, initial_owner=01)
 
-  // TODO:
-  // -store info in mappings / rolluprecord
+  mapping(bytes32 => address) owners;
+  address destWrapperAddr;
+  address cdmAddr = 0x4361d0F75A0186C05f971c566dC6bEa5957483fD;
+
+  constructor(address _destWrapperAddr) {
+    destWrapperAddr = _destWrapperAddr;
+  }
+
   function send(
-    address tokenAddress,
-    uint256 tokenId,
-    address initialOwner,
-    uint256 destRollup
+    address tokenContractAddr,
+    uint256 tokenId
   ) public {
     require(
-      msg.sender == IERC721(tokenAddress).ownerOf(tokenId),
+      msg.sender == IERC721(tokenContractAddr).ownerOf(tokenId),
       "SourceWrapperManager: send function must be called by owner of nft"
     );
 
-    bytes32 serialNumber = keccak256(abi.encodePacked(tokenAddress, initialOwner, tokenId));
+    IERC721(tokenContractAddr).transferFrom(msg.sender, address(this), tokenId);
 
-    console.logBytes32(serialNumber);
+    bytes32 serialNumber = keccak256(abi.encodePacked(tokenContractAddr, msg.sender, tokenId));
+    owners[serialNumber] = msg.sender;
+  }
 
-    IERC721(tokenAddress).transferFrom(initialOwner, address(this), tokenId);
+  function claim(
+    bytes32 serialNumber,
+    address newOwner,
+    address tokenContractAddr,
+    uint256 tokenId
+  ) public {
+    address crossDomainOrigin = ICrossDomainMessenger(cdmAddr).xDomainMessageSender();
+    require(
+      crossDomainOrigin == destWrapperAddr,
+      "Cross domain message sender must be DestWrapper"
+    );
+
+    require(
+      owners[serialNumber] != address(0),
+      "NFT does not exist in this contract"
+    );
+
+    IERC721(tokenContractAddr).transferFrom(address(this), newOwner, tokenId);
+    owners[serialNumber] = address(0);
   }
 }

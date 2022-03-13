@@ -2,45 +2,75 @@
 pragma solidity ^0.8.9;
 import "hardhat/console.sol";
 
+import { ICrossDomainMessenger } from 
+    "@eth-optimism/contracts/libraries/bridge/ICrossDomainMessenger.sol";
+
 contract DestWrapperManager {
-  mapping(bytes32 => address) public owners;
+  address l2CrossDomainMessengerAddr = 0x4200000000000000000000000000000000000007;
 
-  event NewWrapper(bytes32 serialNumber);
+  struct TokenData {
+    address tokenContractAddr;
+    address owner;
+    uint256 tokenId;
+  }
 
-  // TODO:
-  // store (serial number, source rollup, initial owner) tuples
+  mapping(bytes32 => TokenData) serials;
+
+  address sourceWrapperAddr;
+
+  function initialize(address _sourceWrapperAddr) public {
+    require(sourceWrapperAddr == address(0), "Contract has already been initialized.");
+    sourceWrapperAddr = _sourceWrapperAddr;
+  }
+
   function makeWrapper(
-    address tokenAddress,
-    uint256 tokenId,
-    uint256 sourceRollup
+    address tokenContractAddr,
+    uint256 tokenId
   ) public {
-    bytes32 serialNumber = keccak256(abi.encodePacked(tokenAddress, msg.sender, tokenId));
+    bytes32 serialNumber = keccak256(abi.encodePacked(tokenContractAddr, msg.sender, tokenId));
 
     require(
-      owners[serialNumber] == address(0),
+      serials[serialNumber].owner == address(0),
       "DestWrapperManager: serial number already exists"
     );
 
-    emit NewWrapper(serialNumber);
-
-    owners[serialNumber] = msg.sender;
+    serials[serialNumber].tokenContractAddr = tokenContractAddr;
+    serials[serialNumber].owner = msg.sender;
+    serials[serialNumber].tokenId = tokenId;
   }
 
+  // TODO: (later)
+  // case: serial number already exists from previous makeWrapper -> withdraw
   function transfer(address to, bytes32 serialNumber) public {
     require(
-      msg.sender == owners[serialNumber],
+      msg.sender == serials[serialNumber].owner,
       "DestWrapperManager: transfer called by non-owner"
     );
-    owners[serialNumber] = to;
+    serials[serialNumber].owner = to;
   }
 
-  // TODO:
-  // receipt saying "the NFT with serial number R, source rollup A, and initial owner O1, was just unwrapped, with desired new owner O2"
-  function withdraw(bytes32 serialNumber) public {
+  function withdraw(
+    bytes32 serialNumber,
+    address newOwner
+  ) public {
     require(
-      msg.sender == owners[serialNumber],
+      msg.sender == serials[serialNumber].owner,
       "DestWrapperManager: nft must be withdrawn by owner"
     );
-    owners[serialNumber] = address(this);
+
+    serials[serialNumber].owner = address(this);
+
+    bytes memory message = abi.encodeWithSignature("claim(bytes32,address,address,uint256)", 
+      serialNumber,
+      newOwner,
+      serials[serialNumber].tokenContractAddr,
+      serials[serialNumber].tokenId
+    );
+
+    ICrossDomainMessenger(l2CrossDomainMessengerAddr).sendMessage(
+        sourceWrapperAddr,
+        message,
+        1000000   // irrelevant here
+    );
   }
 }
