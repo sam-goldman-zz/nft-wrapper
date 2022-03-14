@@ -71,8 +71,6 @@ describe("DestWrapperManager", () => {
         tokenId
       ])
 
-      console.log(message);
-
       await expect(destWrapperManager
         .connect(account2)
         .withdraw(serialNumber, account3.address)
