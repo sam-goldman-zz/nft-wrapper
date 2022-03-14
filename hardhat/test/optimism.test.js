@@ -1,29 +1,34 @@
 const { expect } = require("chai");
+const { getContractDefinition } = require('@eth-optimism/contracts');
 
-const destAddr = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
-const nftAddr = '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512';
-const sourceAddr = '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0';
+const destAddr = '0xda942df265D37ffb0d040A41f47a83B67C35A213';
+const sourceAddr = '0x1e782D924bB6B918Ef2DE20899CAd871595AB8c6'
+const nftAddr = '0xbD03ECB7f7e949270F79CD7095D4e3497a31212D'
+
+const l2CrossDomainMessengerAddr = "0x4200000000000000000000000000000000000007";
 
 describe("DestWrapperManager", () => {
-  let destWrapperManager, nft, tokenData, serialNumber;
+  let destWrapperManager, tokenData, serialNumber, l2CrossDomainMessenger;
   let tokenId = 1;
 
-  before('attach contracts + mint an nft', async () => {
+  before('connect contracts', async () => {
     [account1, account2, account3] = await ethers.getSigners();
 
     const DestWrapperManager = await ethers.getContractFactory('DestWrapperManager');
     destWrapperManager = await DestWrapperManager.attach(destAddr);
 
-    const NFT = await ethers.getContractFactory('ExampleNFT');
-    nft = await NFT.attach(nftAddr);
-
-    await nft.mint(account1.address);
+    const artifact = getContractDefinition('L2CrossDomainMessenger');
+    l2CrossDomainMessenger = new ethers.Contract(
+      l2CrossDomainMessengerAddr,
+      artifact.abi,
+      account1
+    );
   })
 
   before('get serial number', async () => {
     let serialArgs = ethers.utils.defaultAbiCoder.encode(
       ["address", "address", "uint256"],
-      [nft.address, account1.address, tokenId]
+      [nftAddr, account1.address, tokenId]
     );
     serialNumber = ethers.utils.keccak256(serialArgs);
   })
@@ -38,12 +43,12 @@ describe("DestWrapperManager", () => {
 
   describe('makeWrapper', () => {
     it('happy case', async () => {
-      await expect(destWrapperManager.makeWrapper(nft.address, tokenId))
+      await expect(destWrapperManager.makeWrapper(nftAddr, tokenId))
         .to.emit(destWrapperManager, 'NewWrapper')
         .withArgs(serialNumber);
 
       tokenData = await destWrapperManager.serials(serialNumber);
-      expect(tokenData.tokenContractAddr).to.equal(nft.address);
+      expect(tokenData.tokenContractAddr).to.equal(nftAddr);
       expect(tokenData.owner).to.equal(account1.address);
       expect(tokenData.tokenId).to.equal(tokenId);
     })
@@ -51,7 +56,9 @@ describe("DestWrapperManager", () => {
 
   describe('transfer', () => {
     it('happy case', async () => {
-      await destWrapperManager.transfer(account2.address, serialNumber);
+      const transferTx = await destWrapperManager.transfer(account2.address, serialNumber);
+
+      await transferTx.wait();
 
       const newTokenData = await destWrapperManager.serials(serialNumber);
       expect(newTokenData.owner).to.equal(account2.address);
@@ -63,36 +70,32 @@ describe("DestWrapperManager", () => {
       let iface = new ethers.utils.Interface([
         "function claim(bytes32 serialNumber, address newOwner, address tokenContractAddr, uint256 tokenId)"
       ])
-
       let message = iface.encodeFunctionData("claim", [
         serialNumber,
         account3.address,
-        nft.address,
+        nftAddr,
         tokenId
       ])
 
-      await expect(destWrapperManager
+      const withdrawTx = await destWrapperManager
         .connect(account2)
-        .withdraw(serialNumber, account3.address)
-        ).to.emit(destWrapperManager, 'Withdraw')
-          .withArgs(message);
+        .withdraw(serialNumber, account3.address, { gasLimit: 1000000 })
 
-      expect(await destWrapperManager.serials(serialNumber)).to.equal(destWrapperManager.address);
+      const messageNonce = await l2CrossDomainMessenger.messageNonce();
+      expect(withdrawTx)
+        .to.emit(l2CrossDomainMessenger, 'SentMessage')
+        .withArgs(
+          sourceAddr,
+          account2.address,
+          message,
+          messageNonce,
+          1000000
+        );
+
+      await withdrawTx.wait();
+
+      tokenData = await destWrapperManager.serials(serialNumber);
+      expect(tokenData.owner).to.equal(destWrapperManager.address);
     })
   })
-
-  // it("Should return the new greeting once it's changed", async function () {
-  //   const Greeter = await ethers.getContractFactory("Greeter");
-  //   const greeter = await Greeter.deploy("Hello, world!");
-  //   await greeter.deployed();
-
-  //   expect(await greeter.greet()).to.equal("Hello, world!");
-
-  //   const setGreetingTx = await greeter.setGreeting("Hola, mundo!");
-
-  //   // wait until the transaction is mined
-  //   await setGreetingTx.wait();
-
-  //   expect(await greeter.greet()).to.equal("Hola, mundo!");
-  // });
 });

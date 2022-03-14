@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
-import "hardhat/console.sol";
 
 import { ICrossDomainMessenger } from 
     "@eth-optimism/contracts/libraries/bridge/ICrossDomainMessenger.sol";
 
 contract DestWrapperManager {
+  event NewWrapper(bytes32);
+
   address l2CrossDomainMessengerAddr = 0x4200000000000000000000000000000000000007;
 
   struct TokenData {
@@ -14,9 +15,9 @@ contract DestWrapperManager {
     uint256 tokenId;
   }
 
-  mapping(bytes32 => TokenData) serials;
+  mapping(bytes32 => TokenData) public serials;
 
-  address sourceWrapperAddr;
+  address public sourceWrapperAddr;
 
   function initialize(address _sourceWrapperAddr) public {
     require(sourceWrapperAddr == address(0), "Contract has already been initialized.");
@@ -27,16 +28,16 @@ contract DestWrapperManager {
     address tokenContractAddr,
     uint256 tokenId
   ) public {
-    bytes32 serialNumber = keccak256(abi.encodePacked(tokenContractAddr, msg.sender, tokenId));
+    bytes32 serialNumber = keccak256(abi.encode(tokenContractAddr, msg.sender, tokenId));
 
     require(
       serials[serialNumber].owner == address(0),
       "DestWrapperManager: serial number already exists"
     );
 
-    serials[serialNumber].tokenContractAddr = tokenContractAddr;
-    serials[serialNumber].owner = msg.sender;
-    serials[serialNumber].tokenId = tokenId;
+    emit NewWrapper(serialNumber);
+
+    serials[serialNumber] = TokenData(tokenContractAddr, msg.sender, tokenId);
   }
 
   // TODO: (later)

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+ // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
 import { ICrossDomainMessenger } from 
@@ -13,8 +13,9 @@ interface IERC721 {
 }
 
 contract SourceWrapperManager {
+  event NewSerialNumber(bytes32);
 
-  mapping(bytes32 => address) owners;
+  mapping(bytes32 => address) public owners;
   address destWrapperAddr;
   address cdmAddr = 0x4361d0F75A0186C05f971c566dC6bEa5957483fD;
 
@@ -33,7 +34,8 @@ contract SourceWrapperManager {
 
     IERC721(tokenContractAddr).transferFrom(msg.sender, address(this), tokenId);
 
-    bytes32 serialNumber = keccak256(abi.encodePacked(tokenContractAddr, msg.sender, tokenId));
+    bytes32 serialNumber = keccak256(abi.encode(tokenContractAddr, msg.sender, tokenId));
+    emit NewSerialNumber(serialNumber);
     owners[serialNumber] = msg.sender;
   }
 
